@@ -51,12 +51,12 @@ const Hero: React.FC = () => {
         className="container mx-auto px-4 py-20 flex flex-col items-center text-center opacity-0 transition-opacity duration-1000"
       >
         <div className="mb-6 relative">
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-teal-600 bg-opacity-20 mx-auto overflow-hidden border-4 border-white shadow-lg">
-            <div className="absolute inset-0 bg-teal-600 bg-opacity-10 animate-pulse rounded-full"></div>
-            <div className="absolute inset-1 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 opacity-20"></div>
-            <div className="absolute inset-0 flex items-center justify-center text-teal-700 text-4xl md:text-5xl font-bold">
-              {personalData.name.split(' ').map(name => name[0]).join('')}
-            </div>
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto overflow-hidden border-4 border-white shadow-lg">
+            <img 
+              src="/Untitled design (3).png" 
+              alt={personalData.name}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
 
