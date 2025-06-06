@@ -9,6 +9,8 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import Analytics from './components/Analytics';
+import PerformanceOptimizer from './components/PerformanceOptimizer';
 import './styles/animations.css';
 
 function App() {
@@ -49,7 +51,28 @@ function App() {
         "SQL",
         "Full Stack Development",
         "Web Development"
-      ]
+      ],
+      "hasOccupation": {
+        "@type": "Occupation",
+        "name": "Full Stack Developer",
+        "occupationLocation": {
+          "@type": "Country",
+          "name": "Pakistan"
+        },
+        "skills": [
+          "React Development",
+          "Node.js Development", 
+          "Laravel Development",
+          "Database Design",
+          "API Development",
+          "Frontend Development",
+          "Backend Development"
+        ]
+      },
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": "Iqra University"
+      }
     };
 
     const script = document.createElement('script');
@@ -75,6 +98,19 @@ function App() {
       });
     });
 
+    // Service Worker for caching (PWA features)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
     return () => {
       // Cleanup structured data script
       const existingScript = document.querySelector('script[type="application/ld+json"]');
@@ -86,6 +122,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Analytics />
+      <PerformanceOptimizer />
       <Header />
       <main>
         <Hero />
