@@ -8,12 +8,54 @@ import Projects from './components/Projects';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import './styles/animations.css';
 
 function App() {
   useEffect(() => {
     // Update document title
-    document.title = 'Syed Huzaifa Ahmed | Portfolio';
+    document.title = 'Syed Huzaifa Ahmed | Full Stack Developer Portfolio';
+    
+    // Add meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Syed Huzaifa Ahmed - Professional Full Stack Developer specializing in React, Node.js, Laravel, and modern web technologies. View my portfolio, projects, and get in touch for web development services.');
+    }
+    
+    // Add structured data for SEO
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Syed Huzaifa Ahmed",
+      "jobTitle": "Full Stack Developer",
+      "description": "Professional Full Stack Developer specializing in React, Node.js, Laravel, and modern web technologies",
+      "url": window.location.origin,
+      "email": "huzaifaahmed0605@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Pakistan"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/syed-huzaifa-ahmed-20390729a",
+        "https://github.com/HuzaifaAhmed12"
+      ],
+      "knowsAbout": [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "Laravel",
+        "PHP",
+        "MongoDB",
+        "SQL",
+        "Full Stack Development",
+        "Web Development"
+      ]
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
     
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -32,6 +74,14 @@ function App() {
         });
       });
     });
+
+    return () => {
+      // Cleanup structured data script
+      const existingScript = document.querySelector('script[type="application/ld+json"]');
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
+    };
   }, []);
 
   return (
@@ -47,6 +97,7 @@ function App() {
         <Contact />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

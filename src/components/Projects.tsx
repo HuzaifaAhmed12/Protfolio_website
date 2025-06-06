@@ -72,12 +72,12 @@ const Projects: React.FC = () => {
             </h2>
             <div className="w-20 h-1 bg-teal-600 mx-auto mb-8 rounded-full"></div>
             <p className="text-gray-600 text-lg">
-              Some of my recent work
+              Some of my recent work showcasing full-stack development skills
             </p>
           </div>
 
           {/* Filter Buttons */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
+          <div className="flex flex-wrap justify-center gap-3 mb-10" role="tablist" aria-label="Project filter">
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
@@ -85,6 +85,9 @@ const Projects: React.FC = () => {
                   ? 'bg-teal-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
+              role="tab"
+              aria-selected={filter === 'all'}
+              aria-controls="projects-grid"
             >
               All
             </button>
@@ -97,6 +100,9 @@ const Projects: React.FC = () => {
                     ? 'bg-teal-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
+                role="tab"
+                aria-selected={filter === tag}
+                aria-controls="projects-grid"
               >
                 {tag}
               </button>
@@ -104,9 +110,9 @@ const Projects: React.FC = () => {
           </div>
 
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div id="projects-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8" role="tabpanel">
             {filteredProjects.map((project, index) => (
-              <div
+              <article
                 key={project.title}
                 ref={el => projectRefs.current[index] = el}
                 className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 opacity-0 scale-95"
@@ -114,8 +120,9 @@ const Projects: React.FC = () => {
                 <div className="relative h-60 overflow-hidden">
                   <img
                     src={project.image}
-                    alt={project.title}
+                    alt={`${project.title} project screenshot`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -125,12 +132,14 @@ const Projects: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-800 hover:bg-teal-600 hover:text-white transition-colors duration-300"
+                        aria-label={`View ${project.title} live demo`}
                       >
                         <ExternalLink size={18} />
                       </a>
                       <a
                         href="#"
                         className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-800 hover:bg-teal-600 hover:text-white transition-colors duration-300"
+                        aria-label={`View ${project.title} source code on GitHub`}
                       >
                         <Github size={18} />
                       </a>
@@ -155,7 +164,7 @@ const Projects: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>

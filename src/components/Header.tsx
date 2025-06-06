@@ -49,12 +49,16 @@ const Header: React.FC = () => {
       isScrolled ? 'bg-white/95 shadow-md backdrop-blur-sm py-3' : 'bg-transparent py-5'
     }`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#home" className="text-2xl font-bold text-teal-600 transition-colors duration-300">
+        <a 
+          href="#home" 
+          className="text-2xl font-bold text-teal-600 transition-colors duration-300"
+          aria-label="Syed Huzaifa Ahmed - Full Stack Developer"
+        >
           Syed Huzaifa<span className="text-gray-800">.dev</span>
         </a>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:block">
+        <nav className="hidden md:block" role="navigation" aria-label="Main navigation">
           <ul className="flex space-x-8">
             {navLinks.map((link) => (
               <li key={link.name}>
@@ -65,6 +69,7 @@ const Header: React.FC = () => {
                       ? 'text-teal-600' 
                       : 'text-gray-800'
                   }`}
+                  aria-current={activeSection === link.href.substring(1) ? 'page' : undefined}
                 >
                   {link.name}
                   <span className={`absolute bottom-[-4px] left-0 h-[2px] bg-teal-600 transition-all duration-300 ${
@@ -78,8 +83,11 @@ const Header: React.FC = () => {
         
         {/* Mobile Navigation Toggle */}
         <button 
-          className="md:hidden text-gray-800 focus:outline-none"
+          className="md:hidden text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 rounded-md p-1"
           onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
+          aria-label="Toggle mobile menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -87,22 +95,24 @@ const Header: React.FC = () => {
       
       {/* Mobile Navigation Menu */}
       <div 
+        id="mobile-menu"
         className={`md:hidden absolute top-full left-0 right-0 bg-white shadow-md transition-all duration-300 overflow-hidden ${
           isOpen ? 'max-h-[400px] border-t border-gray-100' : 'max-h-0'
         }`}
       >
-        <nav className="container mx-auto px-4 py-3">
+        <nav className="container mx-auto px-4 py-3" role="navigation" aria-label="Mobile navigation">
           <ul className="flex flex-col space-y-3">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <a 
                   href={link.href}
-                  className={`block py-2 px-4 text-base transition-colors duration-300 ${
+                  className={`block py-2 px-4 text-base transition-colors duration-300 rounded-md ${
                     activeSection === link.href.substring(1) 
-                      ? 'text-teal-600 bg-gray-50 rounded-md' 
-                      : 'text-gray-800'
+                      ? 'text-teal-600 bg-gray-50' 
+                      : 'text-gray-800 hover:bg-gray-50'
                   }`}
                   onClick={() => setIsOpen(false)}
+                  aria-current={activeSection === link.href.substring(1) ? 'page' : undefined}
                 >
                   {link.name}
                 </a>

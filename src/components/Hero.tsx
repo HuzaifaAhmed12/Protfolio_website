@@ -54,8 +54,9 @@ const Hero: React.FC = () => {
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto overflow-hidden border-4 border-white shadow-lg">
             <img 
               src="/Untitled design (3) copy.png" 
-              alt={personalData.name}
+              alt="Syed Huzaifa Ahmed - Full Stack Developer"
               className="w-full h-full object-cover"
+              loading="eager"
             />
           </div>
         </div>
@@ -78,12 +79,14 @@ const Hero: React.FC = () => {
           <a 
             href="#projects" 
             className="px-8 py-3 rounded-md bg-teal-600 text-white font-medium hover:bg-teal-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+            aria-label="View my portfolio projects"
           >
             View My Work
           </a>
           <a 
             href={`mailto:${personalData.email}`} 
             className="px-8 py-3 rounded-md bg-white text-gray-800 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2"
+            aria-label="Contact me via email"
           >
             <Mail size={18} />
             Contact Me
@@ -100,7 +103,7 @@ const Hero: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-teal-600 hover:text-white transition-all duration-300"
-                aria-label={item.name}
+                aria-label={`Connect with me on ${item.name}`}
               >
                 <Icon size={20} />
               </a>
@@ -113,16 +116,16 @@ const Hero: React.FC = () => {
         <button 
           onClick={handleScrollDown}
           className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-gray-600 hover:text-teal-600 transition-colors duration-300"
-          aria-label="Scroll down"
+          aria-label="Scroll down to view more content"
         >
           <ChevronDown size={24} />
         </button>
       </div>
 
       {/* Background elements */}
-      <div className="absolute top-1/4 left-10 w-16 h-16 bg-teal-600 opacity-5 rounded-full"></div>
-      <div className="absolute bottom-1/3 right-10 w-32 h-32 bg-blue-600 opacity-5 rounded-full"></div>
-      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gray-800 opacity-5 rounded-full"></div>
+      <div className="absolute top-1/4 left-10 w-16 h-16 bg-teal-600 opacity-5 rounded-full" aria-hidden="true"></div>
+      <div className="absolute bottom-1/3 right-10 w-32 h-32 bg-blue-600 opacity-5 rounded-full" aria-hidden="true"></div>
+      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gray-800 opacity-5 rounded-full" aria-hidden="true"></div>
     </section>
   );
 };
