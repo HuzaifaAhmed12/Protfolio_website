@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Mail, MessageSquare, Send, Phone, MapPin, User, Github, Linkedin, Twitter, MessageCircle } from 'lucide-react';
+import { Mail, MessageSquare, Send, Phone, MapPin, User, Github, Linkedin, Twitter, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react';
 import { personalData } from '../data/personalData';
 
 const Contact: React.FC = () => {
@@ -10,19 +10,67 @@ const Contact: React.FC = () => {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, you would handle form submission here
-    console.log('Form submitted:', formData);
-    // Reset form after submission
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    alert('Thank you for your message! I will get back to you soon.');
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // EmailJS integration for sending emails
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service_id: 'service_portfolio', // Replace with your EmailJS service ID
+          template_id: 'template_contact', // Replace with your EmailJS template ID
+          user_id: 'your_emailjs_user_id', // Replace with your EmailJS user ID
+          template_params: {
+            from_name: formData.name,
+            from_email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+            to_email: personalData.email, // Your email where you want to receive messages
+            reply_to: formData.email
+          }
+        })
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Track form submission
+        if (window.gtag) {
+          window.gtag('event', 'form_submit', {
+            event_category: 'contact',
+            event_label: 'contact_form_success'
+          });
+        }
+      } else {
+        throw new Error('Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitStatus('error');
+      
+      // Fallback: Open default email client
+      const mailtoLink = `mailto:${personalData.email}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+      )}`;
+      window.location.href = mailtoLink;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -104,7 +152,7 @@ const Contact: React.FC = () => {
                   <div>
                     <h4 className="text-gray-700 font-medium mb-1">Phone</h4>
                     <a 
-                      href="tel:+1234567890" 
+                      href="tel:+923172339596" 
                       className="text-gray-600 hover:text-teal-600 transition-colors"
                     >
                       +92-317-233-9596
@@ -151,10 +199,25 @@ const Contact: React.FC = () => {
                 Send Me a Message
               </h3>
               
+              {/* Success/Error Messages */}
+              {submitStatus === 'success' && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center">
+                  <CheckCircle size={20} className="text-green-600 mr-3" />
+                  <p className="text-green-800">Message sent successfully! I'll get back to you soon.</p>
+                </div>
+              )}
+              
+              {submitStatus === 'error' && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md flex items-center">
+                  <AlertCircle size={20} className="text-red-600 mr-3" />
+                  <p className="text-red-800">Failed to send message. Your email client will open as backup.</p>
+                </div>
+              )}
+              
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
+                    Name *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -169,7 +232,8 @@ const Contact: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900"
+                      disabled={isSubmitting}
+                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
                       placeholder="Your Name"
                     />
                   </div>
@@ -177,7 +241,7 @@ const Contact: React.FC = () => {
                 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
+                    Email *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -192,7 +256,8 @@ const Contact: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900"
+                      disabled={isSubmitting}
+                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
                       placeholder="Your Email"
                     />
                   </div>
@@ -200,7 +265,7 @@ const Contact: React.FC = () => {
                 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                    Subject
+                    Subject *
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -215,7 +280,8 @@ const Contact: React.FC = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900"
+                      disabled={isSubmitting}
+                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
                       placeholder="Subject"
                     />
                   </div>
@@ -223,7 +289,7 @@ const Contact: React.FC = () => {
                 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    Message
+                    Message *
                   </label>
                   <textarea
                     id="message"
@@ -231,8 +297,9 @@ const Contact: React.FC = () => {
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    disabled={isSubmitting}
                     rows={5}
-                    className="block w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900"
+                    className="block w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-600/50 focus:border-teal-600 text-gray-900 disabled:bg-gray-50 disabled:cursor-not-allowed"
                     placeholder="Your Message"
                   ></textarea>
                 </div>
@@ -240,13 +307,35 @@ const Contact: React.FC = () => {
                 <div>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center w-full px-4 py-3 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 transition-colors duration-300"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center w-full px-4 py-3 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
-                    <Send size={18} className="mr-2" />
-                    Send Message
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={18} className="mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
+              
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <p className="text-sm text-gray-500 text-center">
+                  Or email me directly at{' '}
+                  <a 
+                    href={`mailto:${personalData.email}`}
+                    className="text-teal-600 hover:text-teal-700 font-medium"
+                  >
+                    {personalData.email}
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
