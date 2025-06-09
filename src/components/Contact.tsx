@@ -24,50 +24,30 @@ const Contact: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      // EmailJS integration for sending emails
-      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          service_id: 'service_portfolio', // Replace with your EmailJS service ID
-          template_id: 'template_contact', // Replace with your EmailJS template ID
-          user_id: 'your_emailjs_user_id', // Replace with your EmailJS user ID
-          template_params: {
-            from_name: formData.name,
-            from_email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-            to_email: personalData.email, // Your email where you want to receive messages
-            reply_to: formData.email
-          }
-        })
-      });
-
-      if (response.ok) {
-        setSubmitStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-        
-        // Track form submission
-        if (window.gtag) {
-          window.gtag('event', 'form_submit', {
-            event_category: 'contact',
-            event_label: 'contact_form_success'
-          });
-        }
-      } else {
-        throw new Error('Failed to send email');
+      // Create mailto link with form data
+      const subject = encodeURIComponent(formData.subject);
+      const body = encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+      );
+      const mailtoLink = `mailto:${personalData.email}?subject=${subject}&body=${body}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+      
+      // Set success status
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      
+      // Track form submission
+      if (window.gtag) {
+        window.gtag('event', 'form_submit', {
+          event_category: 'contact',
+          event_label: 'contact_form_success'
+        });
       }
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error opening email client:', error);
       setSubmitStatus('error');
-      
-      // Fallback: Open default email client
-      const mailtoLink = `mailto:${personalData.email}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-      )}`;
-      window.location.href = mailtoLink;
     } finally {
       setIsSubmitting(false);
     }
@@ -203,14 +183,14 @@ const Contact: React.FC = () => {
               {submitStatus === 'success' && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center">
                   <CheckCircle size={20} className="text-green-600 mr-3" />
-                  <p className="text-green-800">Message sent successfully! I'll get back to you soon.</p>
+                  <p className="text-green-800">Your email client will open with the message pre-filled!</p>
                 </div>
               )}
               
               {submitStatus === 'error' && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md flex items-center">
                   <AlertCircle size={20} className="text-red-600 mr-3" />
-                  <p className="text-red-800">Failed to send message. Your email client will open as backup.</p>
+                  <p className="text-red-800">Unable to open email client. Please copy the email address below.</p>
                 </div>
               )}
               
@@ -313,7 +293,7 @@ const Contact: React.FC = () => {
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
+                        Opening Email...
                       </>
                     ) : (
                       <>
